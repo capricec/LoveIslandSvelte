@@ -1,6 +1,5 @@
 <script>
 	import Scrolly from "$components/helpers/Scrolly.svelte";
-	import DemoLayerCake from "$components/demo/Demo.LayerCake.svelte";
 	let value;
 </script>
 
