@@ -1,6 +1,6 @@
 <script>
 	import { getContext } from "svelte";
-	import Demo from "$components/demo/Demo.svelte";
+	import Story from "$components/story/story.svelte";
  //	import WIP from "$components/helpers/WIP.svelte";
 	// import Footer from "$components/Footer.svelte";
 
@@ -9,5 +9,5 @@
 </script>
 
 <!-- <WIP />-->
-<Demo />
+<Story />
 <!-- <Footer /> -->

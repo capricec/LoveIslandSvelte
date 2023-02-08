@@ -27,7 +27,7 @@
 	function dodge(data, { rds = 1, x = d => d } = {}) {
 	  const radius2 = rds ** 2;
 	  const circles = data.map(d => ({ x: x(d), [$config.z]: d[$config.z], data: d })).sort((a, b) => a.x - b.x);
-	  const epsilon = 1e-3;
+	  const epsilon = 5;
 	  let head = null, tail = null;
 
 	  // Returns true if circle ⟨x,y⟩ intersects with any circle in the queue.
