@@ -12,52 +12,52 @@
 		<BuildingChart />
 	</div>
 	<Scrolly>
-			<div class="step">
+			<div class="step scrollyLeft">
 				<p>{copy.TA1a}</p>
 			</div>
 	</Scrolly>
 	<Scrolly>
-			<div class="step">
+			<div class="step scrollyLeft">
 				<p>{copy.TA1b}</p>
 			</div>
 	</Scrolly>
 	<Scrolly>
-			<div class="step">
+			<div class="step scrollyLeft">
 				<p>{copy.TA2a}</p>
 			</div>
 	</Scrolly>
 	<Scrolly>
-			<div class="step">
+			<div class="step scrollyLeft">
 				<p>{copy.TA2b}</p>
 			</div>
 	</Scrolly>
 	<Scrolly>
-			<div class="step">
+			<div class="step scrollyLeft">
 				<p>{copy.TA3a}</p>
 			</div>
 	</Scrolly>
 	<Scrolly>
-			<div class="step">
+			<div class="step scrollyLeft">
 				<p>{copy.TA3b}</p>
 			</div>
 	</Scrolly>
 	<Scrolly>
-			<div class="step">
+			<div class="step scrollyLeft">
 				<p>{copy.TA4a}</p>
 			</div>
 	</Scrolly>
 	<Scrolly>
-			<div class="step">
+			<div class="step scrollyLeft">
 				<p>{copy.TA4b}</p>
 			</div>
 	</Scrolly>
 	<Scrolly>
-			<div class="step">
+			<div class="step scrollyLeft">
 				<p>{copy.TA5a}</p>
 			</div>
 	</Scrolly>
 	<Scrolly>
-			<div class="step">
+			<div class="step scrollyLeft">
 				<p>{copy.TA5b}</p>
 			</div>
 	</Scrolly>
@@ -82,11 +82,16 @@
 </section>-->
 
 <style>
+
+	.scrolly{
+		background-image: url('//static/assets/beachbackground.jpg');
+	}
 	.stickyChart {
 		position: sticky;
 		z-index: -1;
-		top: 2em;
+		top: 0em;
 	}
+
 
 	.spacer {
 		height: 80vh;
@@ -97,6 +102,17 @@
 		background: none;
 		text-align: center;
 	}
+
+	.scrollyLeft{
+		height: auto;
+		margin-bottom: 80vh;
+		width: 50%;
+		right: 0;
+		background: white;
+		padding: 20px;
+		box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+	}
+
 
 	.step p {
 		padding: 1rem;

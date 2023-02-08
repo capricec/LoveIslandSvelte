@@ -4,17 +4,24 @@
 </script>
 
 <div id="Intro">
-	<h1>Love Island Svelte</h1>
+	<h1>What Can Love Island Tell Us About Love</h1>
+	<h6>A data driven look at why we choose the couples that win Love Island</h6>
 </div>
 <div id = "Content">
 	<StoryScrolly />
 </div>
 
 <style>
+
+	h1, h6{
+		text-align:center;
+	}
+
 	#Content, #Intro {
+		font-family: "Tiempos Text Web";
 		max-width: 40rem;
 		padding: 16px;
-		margin: 0 auto;
+		margin: auto;
 	}
 
 	:global(#Content section) {
