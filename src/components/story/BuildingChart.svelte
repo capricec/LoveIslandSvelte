@@ -1,13 +1,18 @@
 <script>
-	import { range } from "d3";
 	import { LayerCake, Svg } from "layercake";
-	import BeeswarmForce from "$components/charts/todo/BeeswarmForce.svelte";
+	/*import BeeswarmForce from "$components/charts/todo/BeeswarmForce.svelte";*/
 	/*import BuildingNetwork from "$components/story/BuildingNetwork.svelte";*/
 	import SinglesData from "$data/SinglesData.json";
 	import CouplesData from "$data/CouplesData.json";
 	
-	const nodeData = SinglesData.filter(function(d){ return d.Season == "Love Island USA (Season 4)" });
-	const linkData = CouplesData.filter(function(d){ return d.values[0].Season == "Love Island USA (Season 4)" });
+	/*const nodeData = SinglesData.filter(function(d){ return d.Season == "Love Island USA (Season 4)" });
+	const linkData = CouplesData.filter(function(d){ return d.values[0].Season == "Love Island USA (Season 4)" });*/
+
+	const nodeData = SinglesData
+	const linkData = CouplesData
+
+	console.log(SinglesData, CouplesData);
+
 	const xKey = 'Entered';
 	const titleKey = 'Unique_Identifier';
 
@@ -33,8 +38,9 @@
 <section>
 	<h2>LayerCake Network</h2>
 	<figure>
-		<LayerCake 
-			data={nodes:nodesTransformed, links: linksTransformed}
+		<LayerCake
+		    nodes = nodesTransformed
+		    links = linksTransformed
 			height = 50vh>
 			<Svg>
 				<!--<BuildingNetwork />-->

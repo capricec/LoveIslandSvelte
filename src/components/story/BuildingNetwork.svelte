@@ -6,9 +6,7 @@
   import { select, selectAll } from "d3";
   import { drag } from "d3";
   
-  const { data, height, config } = getContext('LayerCake');
-  let nodeData = data.nodes;
-  let linkData = data.links;
+  const { nodes, links, height, config } = getContext('LayerCake');
   
   import {forceSimulation, forceLink, forceManyBody, forceCenter } from "d3";
   /*let d3 = {
@@ -28,8 +26,8 @@
   let svg;
   let width = 500;
   const nodeRadius = 5;
-  $: links = linkData.map((d) => Object.create(d));
-  $: nodes = nodeData.map((d) => Object.create(d));
+  $: links = links.map((d) => Object.create(d));
+  $: nodes = nodes.map((d) => Object.create(d));
   const colourScale = d3.scaleOrdinal(d3.schemeCategory10);
   let transform = d3.zoomIdentity;
   $: console.log(transform);

@@ -2,7 +2,7 @@
 	import Scrolly from "$components/helpers/Scrolly.svelte";
 	import BuildingChart from "$components/story/BuildingChart.svelte";
 	import copy from "$data/copy.json"
-	let value;
+	
 </script>
 
 <section id="scrolly">
