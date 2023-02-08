@@ -1,15 +1,39 @@
 <script>
   import { onMount } from "svelte";
-  import { scaleLinear, scaleOrdinal } from "d3";
-  import { zoom, zoomIdentity } from "d3";
-  import { schemeCategory10 } from "d3";
-  import { select, selectAll } from "d3";
-  import { drag } from "d3";
+
+  import { scaleLinear, scaleOrdinal } from "d3-scale";
+  import { zoom, zoomIdentity } from "d3-zoom";
+  import { schemeCategory10 } from "d3-scale-chromatic";
+  import { select, selectAll } from "d3-selection";
+  import { drag } from "d3-drag";
+  import {forceSimulation, forceLink, forceManyBody, forceCenter } from "d3-force";
+  import SinglesData from "$data/SinglesDataClean.csv";
+  import CouplesData from "$data/CouplesData.json";
   
-  const { nodes, links, height, config } = getContext('LayerCake');
+  const nodeData = SinglesData.filter(function(d){ return d.Season == "Love Island USA (Season 4)" });
+
+  const linkData = CouplesData.filter(function(d){ return d.values[0].Season == "Love Island USA (Season 4)" });
+
+  const xKey = 'Entered';
+  const titleKey = 'Unique_Identifier';
+
+  const nodesTransformed = nodeData.map(d => {
+    return {
+      id: d[titleKey],
+      group: +d[xKey]
+    };
+  });
   
-  import {forceSimulation, forceLink, forceManyBody, forceCenter } from "d3";
-  /*let d3 = {
+  const linksTransformed = linkData.map(d => {
+    return {
+      source: d.values[0].Participant1Identifier,
+      target: d.values[0].Participant2Identifier,
+      value: d.TotalTimesChosen
+    };
+  });
+  
+
+  let d3 = {
     zoom,
     zoomIdentity,
     scaleLinear,
@@ -22,12 +46,14 @@
     forceLink,
     forceManyBody,
     forceCenter,
-  };*/
+  };
+
   let svg;
   let width = 500;
+  let height = 500;
   const nodeRadius = 5;
-  $: links = links.map((d) => Object.create(d));
-  $: nodes = nodes.map((d) => Object.create(d));
+  $: links = linksTransformed.map((d) => Object.create(d));
+  $: nodes = nodesTransformed.map((d) => Object.create(d));
   const colourScale = d3.scaleOrdinal(d3.schemeCategory10);
   let transform = d3.zoomIdentity;
   $: console.log(transform);
@@ -101,7 +127,7 @@
 
 <svelte:window on:resize={resize} />
 
-<g class='network-group'>
+<svg bind:this={svg} {width} {height}>
   {#each links as link}
     <g stroke="#999" stroke-opacity="0.6">
       <line
@@ -128,7 +154,7 @@
       <title>{point.id}</title></circle
     >
   {/each}
-</g>
+</svg>
 
 <style>
   svg {
