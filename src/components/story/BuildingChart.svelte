@@ -1,7 +1,8 @@
 <script>
 	import { LayerCake, Svg } from "layercake";
 	import BuildingArcs from "$components/story/BuildingArcs.svelte";
-
+ 
+ 
 </script>
 
 	<figure>
