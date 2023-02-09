@@ -13,12 +13,20 @@
     console.log(value);
     scrollPosition = value;
 
-    if (scrollPosition == 1){
+    if (scrollPosition == 0){
       addNodes()
     }
 
+    if (scrollPosition == 1){
+      colorNodes()
+    }
+
+    if (scrollPosition == 2){
+      addAllLinksNoShading()
+    }
+
     if (scrollPosition == 3){
-      addFirstLinks()
+      addAllLinks()
     }
 
     if (scrollPosition == 5){
@@ -34,7 +42,7 @@
     }
   });
 
-  const season = "Love Island UK (Season 8)";
+  const season = "Love Island Greece (Season 1)";
   
   const nodeData = SinglesData.filter(function(d){ return d.Season == season});
   const linkData = CouplesData.filter(function(d){ return d.values[0].Season == season });
@@ -66,7 +74,7 @@
   let height = 500;
   
   const colourScale = d3.scaleLinear().domain([0, 5, 9, 40])
-    .range([100, 100, 30, 0]);
+    .range([100, 100, 20, 0]);
 
   const opacityLine = d3.scaleLinear().domain([0, 13, 14, 50])
     .range([0, 10, 30, 50]);
@@ -84,6 +92,20 @@
 
 function addNodes(){
 
+ node = nodeData.map(d => {
+      return {
+        Gender: d.Gender,
+        Entered: 1,
+        Status: d.Status,
+        First_Name: d.First_Name
+      };
+  });
+ link = [];
+
+}
+
+function colorNodes(){
+
  node = nodeData;
  link = [];
 
@@ -100,7 +122,7 @@ function addFirstLinks(){
         target: d.values[0].Participant2,
         chosen: 1,
         firstcouple: d.FirstCouplingDay,
-        totaldays: 30,
+        totaldays: 35,
       };
   });
 
@@ -128,7 +150,35 @@ function addFirstLinks(){
         target: d.values[0].Participant2,
         chosen: 1,
         firstcouple: d.FirstCouplingDay,
-        totaldays: 30,
+        totaldays: 35,
+      };
+  });
+
+   link.forEach(function(d){
+     var index1 = nodeData.findIndex(x => x.First_Name === d.source);
+     var index2 = nodeData.findIndex(x => x.First_Name === d.target);
+     if(index1 < index2){
+      d.index1 = index2;
+      d.index2 = index1;
+     } else{
+      d.index2 = index2;
+      d.index1 = index1;
+     }
+     var radius = 7.5*(d.index1-d.index2)
+
+     d.arcPath = buildArc(d)
+    })
+
+  }
+
+  function addAllLinksNoShading(){
+  link = linkData.map(d => {
+      return {
+        source: d.values[0].Participant1,
+        target: d.values[0].Participant2,
+        chosen: 1,
+        firstcouple: 14,
+        totaldays: 35,
       };
   });
 
@@ -157,7 +207,7 @@ function addFirstLinks(){
       target: d.values[0].Participant2,
       chosen: d.TotalTimesChosen,
       firstcouple: d.FirstCouplingDay,
-      totaldays:30
+      totaldays:35
     };
   });
 
@@ -187,7 +237,7 @@ function showNumberofDays(){
       target: d.values[0].Participant2,
       chosen: d.TotalTimesChosen,
       firstcouple: d.FirstCouplingDay,
-      totaldays: 30+ d.TotalDays
+      totaldays: 35+ d.TotalDays
     };
   });
 
@@ -209,19 +259,20 @@ function showNumberofDays(){
   }
 
   function buildArc (d) {
+    //console.log(d.index1, d.index2);
      let start = xScale(nodeData[d.index2].First_Name);
      let end = xScale(nodeData[d.index1].First_Name);
-     let curve = (start - end)/(1+ (d.totaldays/30));
+     let curve = (start - end)/(1+ (d.totaldays/35));
      //curve = (start - end)/2;
 
      const arcPath = ['M',            // start the path
-              start, height-50,       // declare the (x,y) of where to start
+              start, height-75,       // declare the (x,y) of where to start
              'A',                     // specify an eliptical curve
              curve, ',',    // xradius: height of arc is proportional to start - end
              (start - end)/2,         // yradius 
               0, 0, ",",              // rotation of ellipse is 0 along x and y; 
               start < end ? 1: 0,     // make all arcs curve above the nodes;
-              end, height-50]         // declare (x,y) of endpoint
+              end, height-75]         // declare (x,y) of endpoint
            .join(' ');                // convert the bracketed array into a string
      return arcPath;
   };
@@ -255,10 +306,20 @@ function showNumberofDays(){
       stroke = {colourScaleWinner(point.Status)}
       stroke-width ={'1'}
       cx={xScale(point.First_Name)}
-      cy={height - 40}
+      cy={height - 70}
     >
-      <title>{point.First_Name}</title></circle
-    >
+    </circle>
+
+    <g
+      class="name-holder"
+      transform={"translate(" +(xScale(point.First_Name)+4) + "," + (height-60) + ") rotate(-90)"}>
+    <text
+      class="name"
+      text-anchor="end"
+      opacity = {colourScale(point.Entered) + "%"}
+    >{point.First_Name}</text>
+  </g>
+
   {/each}
 </svg>
 
@@ -267,5 +328,10 @@ function showNumberofDays(){
     float: left;
   }
   circle {
+  }
+
+  text{
+    padding-top:5px;
+    font-size: 12px;
   }
 </style>

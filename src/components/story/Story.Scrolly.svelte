@@ -9,6 +9,7 @@
 <section id="scrolly">
 	<p>{copy.Intro}</p>
 	<p>{copy.Intro2}</p>
+	<p>{copy.Intro3}</p>
 	<div class = "stickyChart">
 		<BuildingChart/>
 	</div>
@@ -17,7 +18,7 @@
 		{#each ['TA1a', 'TA1b', 'TA2a', 'TA2b', 'TA3a', 'TA3b','TA4a', 'TA4b', 'TA5a', 'TA5b'] as text, i}
 			{@const active = $scrollState === i}
 			<div class="step scrollyLeft" class:active>
-				<p>{copy[text]}</p>
+				<p>{copy[text].plain} <span class="tagline"> {copy[text].tagline} </span> {copy[text].plain2}</p>
 			</div>
 		{/each}
 	</Scrolly>
@@ -37,6 +38,12 @@
 		top: 0em;
 	}
 
+	.tagline{
+		background-color: purple;
+		color: white;
+		padding-left: 0px;
+	}
+
 
 	.spacer {
 		height: 80vh;
@@ -51,7 +58,7 @@
 	.scrollyLeft{
 		height: auto;
 		margin-bottom: 80vh;
-		width: 50%;
+		width: 60%;
 		right: 0;
 		background: white;
 		padding: 20px;

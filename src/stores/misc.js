@@ -1,3 +1,3 @@
 import { writable, derived } from "svelte/store";
 
-export const scrollState = writable(0);
+export const scrollState = writable(undefined);
