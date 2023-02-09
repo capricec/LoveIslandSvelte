@@ -1,6 +1,7 @@
 <script>
 	import Scrolly from "$components/helpers/Scrolly.svelte";
 	import BuildingChart from "$components/story/BuildingChart.svelte";
+	import SeasonSelect from "$components/story/SeasonSelect.svelte";
 	import copy from "$data/copy.json"
 	import { scrollState } from "$stores/misc";
 	
@@ -11,6 +12,7 @@
 	<p>{copy.Intro2}</p>
 	<p>{copy.Intro3}</p>
 	<div class = "stickyChart">
+		<SeasonSelect/>
 		<BuildingChart/>
 	</div>
 
@@ -34,7 +36,7 @@
 
 	.stickyChart {
 		position: sticky;
-		z-index: -1;
+		z-index: 0;
 		top: 0em;
 	}
 
@@ -58,10 +60,12 @@
 	.scrollyLeft{
 		height: auto;
 		margin-bottom: 80vh;
+		position: relative;
 		width: 60%;
 		right: 0;
 		background: white;
 		padding: 20px;
+		z-index: 10;
 		box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 	}
 

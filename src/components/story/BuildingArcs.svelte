@@ -5,9 +5,31 @@
   import { arc } from "d3-shape";
   import SinglesData from "$data/SinglesData.json";
   import CouplesData from "$data/CouplesData.json";
-  import { scrollState } from "$stores/misc";
+  import { scrollState, chosenSeason } from "$stores/misc";
 
   let scrollPosition;
+  let link = [];
+  let node = [];
+  let nodeData, linkData, allNodesNames, xScale;
+  
+  
+  let d3 = {
+    scaleLinear,
+    scaleOrdinal,
+    arc,
+    scalePoint
+  };
+
+  let svg;
+  let width = 600;
+  let height = 450;
+
+  chosenSeason.subscribe(value => {
+    console.log(value);
+    UpdateSeason(value);
+  })
+
+
 
   scrollState.subscribe(value => {
     console.log(value);
@@ -42,40 +64,12 @@
     }
   });
 
-  const season = "Love Island Greece (Season 1)";
   
-  const nodeData = SinglesData.filter(function(d){ return d.Season == season});
-  const linkData = CouplesData.filter(function(d){ return d.values[0].Season == season });
+  
 
-
-  nodeData.sort(function(a, b) {
-  if (a.Gender != b.Gender) { return a.Gender < b.Gender ? 1 : -1; }
-  if ((a.Gender == b.Gender) && a.Gender == 'M' && +a.Entered != +b.Entered) {
-    return +a.Entered > +b.Entered ? 1 : -1;
-  } 
-  if ((a.Gender == b.Gender) && a.Gender == 'F'  && +a.Entered != +b.Entered) {
-    return +a.Entered < +b.Entered ? 1 : -1;
-  } 
-});
-  
-  let link = [];
-  let node = [];
-  
-  
-  let d3 = {
-    scaleLinear,
-    scaleOrdinal,
-    arc,
-    scalePoint
-  };
-
-  let svg;
-  let width = 600;
-  let height = 500;
   
   const colourScale = d3.scaleLinear().domain([0, 5, 9, 40])
     .range([100, 100, 20, 0]);
-
   const opacityLine = d3.scaleLinear().domain([0, 13, 14, 50])
     .range([0, 10, 30, 50]);
   const colourScaleLine = d3.scaleLinear().domain([0, 14, 15,50])
@@ -85,10 +79,34 @@
   const colourScaleGender = d3.scaleOrdinal().domain(["M", "F"])
     .range(["teal", "DeepPink"]);
 
- var allNodesNames = nodeData.map(function(d){return d.First_Name});
- var xScale = d3.scalePoint()
-     .domain(allNodesNames)
-     .range([10,width- 20]);
+
+
+function UpdateSeason(newSeason){
+  let season = newSeason;
+  
+  nodeData = SinglesData.filter(function(d){ return d.Season == season});
+  linkData = CouplesData.filter(function(d){ return d.values[0].Season == season });
+
+
+  nodeData.sort(function(a, b) {
+    if (a.Gender != b.Gender) { return a.Gender < b.Gender ? 1 : -1; }
+    if ((a.Gender == b.Gender) && a.Gender == 'M' && +a.Entered != +b.Entered) {
+      return +a.Entered > +b.Entered ? 1 : -1;
+    } 
+    if ((a.Gender == b.Gender) && a.Gender == 'F'  && +a.Entered != +b.Entered) {
+      return +a.Entered < +b.Entered ? 1 : -1;
+    } 
+  });
+
+   allNodesNames = nodeData.map(function(d){return d.First_Name});
+   xScale = d3.scalePoint()
+       .domain(allNodesNames)
+       .range([10,width- 20]);
+
+  colorNodes()
+
+}
+
 
 function addNodes(){
 
