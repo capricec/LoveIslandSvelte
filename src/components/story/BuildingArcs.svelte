@@ -2,89 +2,215 @@
   import { onMount } from "svelte";
 
   import { scalePoint, scaleLinear, scaleOrdinal } from "d3-scale";
-  import { zoomIdentity } from "d3-zoom";
   import { arc } from "d3-shape";
   import SinglesData from "$data/SinglesData.json";
   import CouplesData from "$data/CouplesData.json";
+  import { scrollState } from "$stores/misc";
+
+  let scrollPosition;
+
+  scrollState.subscribe(value => {
+    console.log(value);
+    scrollPosition = value;
+
+    if (scrollPosition == 1){
+      addNodes()
+    }
+
+    if (scrollPosition == 3){
+      addFirstLinks()
+    }
+
+    if (scrollPosition == 5){
+      addAllLinks()
+    }
+
+    if(scrollPosition == 7){
+      showRecouplings()
+    }
+
+    if(scrollPosition == 9){
+      showNumberofDays()
+    }
+  });
 
   const season = "Love Island UK (Season 8)";
   
   const nodeData = SinglesData.filter(function(d){ return d.Season == season});
   const linkData = CouplesData.filter(function(d){ return d.values[0].Season == season });
 
-  const xKey = 'Entered';
-  const titleKey = 'First_Name';
 
-  const node = nodeData.map(d => {
-    return {
-      id: d[titleKey],
-      entered: +d[xKey],
-      status: d["Status"],
-      gender: d["Gender"]
-    };
-  });
-
-  node.sort(function(a, b) {
-  if (a.gender != b.gender) {
-    return a.gender < b.gender ? 1 : -1;
-  }
-  if ((a.gender == b.gender) && a.gender == 'M' && a.entered != b.entered) {
-    return a.entered > b.entered ? 1 : -1;
+  nodeData.sort(function(a, b) {
+  if (a.Gender != b.Gender) { return a.Gender < b.Gender ? 1 : -1; }
+  if ((a.Gender == b.Gender) && a.Gender == 'M' && +a.Entered != +b.Entered) {
+    return +a.Entered > +b.Entered ? 1 : -1;
   } 
-
-  if ((a.gender == b.gender) && a.gender == 'F'  && a.entered != b.entered) {
-    return a.entered < b.entered ? 1 : -1;
+  if ((a.Gender == b.Gender) && a.Gender == 'F'  && +a.Entered != +b.Entered) {
+    return +a.Entered < +b.Entered ? 1 : -1;
   } 
-
 });
   
-  const link = linkData.map(d => {
-    return {
-      source: d.values[0].Participant1,
-      target: d.values[0].Participant2,
-      chosen: d.TotalTimesChosen,
-      firstcouple: d.FirstCouplingDay,
-      totaldays: d.TotalDays
-    };
-  });
-
-  console.log(node);
+  let link = [];
+  let node = [];
   
-
+  
   let d3 = {
-    zoomIdentity,
     scaleLinear,
     scaleOrdinal,
     arc,
     scalePoint
   };
 
-  let transform = d3.zoomIdentity;
-
   let svg;
   let width = 600;
   let height = 500;
   
-  const colourScale = d3.scaleLinear().domain([0, 40])
-    .range([100, 0]);
+  const colourScale = d3.scaleLinear().domain([0, 5, 9, 40])
+    .range([100, 100, 30, 0]);
+
+  const opacityLine = d3.scaleLinear().domain([0, 13, 14, 50])
+    .range([0, 10, 30, 50]);
   const colourScaleLine = d3.scaleLinear().domain([0, 14, 15,50])
     .range(["black", "black", "lightgrey", "white"])
   const colourScaleWinner = d3.scaleOrdinal().domain(["Winner", "Runner-Up", "Third Place", "Fourth Place", "Dumped", "Walked"])
     .range(["black", "grey", "grey", "grey", "white", "white"]);
+  const colourScaleGender = d3.scaleOrdinal().domain(["M", "F"])
+    .range(["teal", "DeepPink"]);
 
-    const colourScaleGender = d3.scaleOrdinal().domain(["M", "F"])
-    .range(["teal", "pink"]);
-
- const arcGen = arc();
-
- var allNodesNames = node.map(function(d){return d.id});
+ var allNodesNames = nodeData.map(function(d){return d.First_Name});
  var xScale = d3.scalePoint()
      .domain(allNodesNames)
      .range([10,width- 20]);
 
- function buildArc (d) {
-     let start = xScale(node[d.index2].id);
-     let end = xScale(node[d.index1].id);
+function addNodes(){
+
+ node = nodeData;
+ link = [];
+
+}
+
+
+function addFirstLinks(){
+
+  let filteredlinkData = linkData.filter(function(d){ return +d.FirstCouplingDay < 15 });
+   
+  link = filteredlinkData.map(d => {
+      return {
+        source: d.values[0].Participant1,
+        target: d.values[0].Participant2,
+        chosen: 1,
+        firstcouple: d.FirstCouplingDay,
+        totaldays: 30,
+      };
+  });
+
+   link.forEach(function(d){
+     var index1 = nodeData.findIndex(x => x.First_Name === d.source);
+     var index2 = nodeData.findIndex(x => x.First_Name === d.target);
+     if(index1 < index2){
+      d.index1 = index2;
+      d.index2 = index1;
+     } else{
+      d.index2 = index2;
+      d.index1 = index1;
+     }
+     var radius = 7.5*(d.index1-d.index2)
+
+     d.arcPath = buildArc(d)
+    })
+
+  }
+
+  function addAllLinks(){
+  link = linkData.map(d => {
+      return {
+        source: d.values[0].Participant1,
+        target: d.values[0].Participant2,
+        chosen: 1,
+        firstcouple: d.FirstCouplingDay,
+        totaldays: 30,
+      };
+  });
+
+   link.forEach(function(d){
+     var index1 = nodeData.findIndex(x => x.First_Name === d.source);
+     var index2 = nodeData.findIndex(x => x.First_Name === d.target);
+     if(index1 < index2){
+      d.index1 = index2;
+      d.index2 = index1;
+     } else{
+      d.index2 = index2;
+      d.index1 = index1;
+     }
+     var radius = 7.5*(d.index1-d.index2)
+
+     d.arcPath = buildArc(d)
+    })
+
+  }
+
+  function showRecouplings(){
+
+    link = linkData.map(d => {
+    return {
+      source: d.values[0].Participant1,
+      target: d.values[0].Participant2,
+      chosen: d.TotalTimesChosen,
+      firstcouple: d.FirstCouplingDay,
+      totaldays:30
+    };
+  });
+
+   link.forEach(function(d){
+     var index1 = nodeData.findIndex(x => x.First_Name === d.source);
+     var index2 = nodeData.findIndex(x => x.First_Name === d.target);
+     if(index1 < index2){
+      d.index1 = index2;
+      d.index2 = index1;
+     } else{
+      d.index2 = index2;
+      d.index1 = index1;
+     }
+     var radius = 7.5*(d.index1-d.index2)
+
+     d.arcPath = buildArc(d)
+    })
+
+  }
+
+
+function showNumberofDays(){
+
+    link = linkData.map(d => {
+    return {
+      source: d.values[0].Participant1,
+      target: d.values[0].Participant2,
+      chosen: d.TotalTimesChosen,
+      firstcouple: d.FirstCouplingDay,
+      totaldays: 30+ d.TotalDays
+    };
+  });
+
+   link.forEach(function(d){
+     var index1 = nodeData.findIndex(x => x.First_Name === d.source);
+     var index2 = nodeData.findIndex(x => x.First_Name === d.target);
+     if(index1 < index2){
+      d.index1 = index2;
+      d.index2 = index1;
+     } else{
+      d.index2 = index2;
+      d.index1 = index1;
+     }
+     var radius = 7.5*(d.index1-d.index2)
+
+     d.arcPath = buildArc(d)
+    })
+
+  }
+
+  function buildArc (d) {
+     let start = xScale(nodeData[d.index2].First_Name);
+     let end = xScale(nodeData[d.index1].First_Name);
      let curve = (start - end)/(1+ (d.totaldays/30));
      //curve = (start - end)/2;
 
@@ -99,30 +225,6 @@
            .join(' ');                // convert the bracketed array into a string
      return arcPath;
   };
-
- link.forEach(function(d){
-   var index1 = node.findIndex(x => x.id === d.source);
-   var index2 = node.findIndex(x => x.id === d.target);
-   if(index1 < index2){
-    d.index1 = index2;
-    d.index2 = index1;
-   } else{
-    d.index2 = index2;
-    d.index1 = index1;
-   }
-   var radius = 7.5*(d.index1-d.index2)
-   /*d.arcPath = arcGen({
-      innerRadius: 0,
-      outerRadius: radius,
-      startAngle: -Math.PI / 2,
-      endAngle: Math.PI / 2, // radians
-    });
-   d.place = "transform:translate(" + (10+ (d.index2 + (d.index1 - d.index2)/2)*15) + "px,395px)"*/
-
-   d.arcPath = buildArc(d)
-  })
-
-  console.log(link);
   
   function resize() {
     ({ width, height } = svg.getBoundingClientRect());
@@ -137,37 +239,25 @@
       <path
         d={arc.arcPath}
         fill={"none"}
-        opacity = {'50%'}
+        opacity = {opacityLine(arc.totaldays)+ "%"}
         stroke={colourScaleLine(arc.firstcouple)}
         stroke-width={arc.chosen}
-        style={arc.place}
       />
     </g>
   {/each}
-
-  <g>
-      <line
-        stroke={"white"}
-        stroke-width={'8'}
-        x1="0" 
-        y1={height - 45} 
-        x2={width} 
-        y2={height - 45} 
-      />
-    </g>
   
   {#each node as point,i}
     <circle
       class="node"
       r="7"
-      fill={colourScaleGender(point.gender)}
-      opacity = {colourScale(point.entered) + "%"}
-      stroke = {colourScaleWinner(point.status)}
+      fill={colourScaleGender(point.Gender)}
+      opacity = {colourScale(point.Entered) + "%"}
+      stroke = {colourScaleWinner(point.Status)}
       stroke-width ={'1'}
-      cx={xScale(point.id)}
+      cx={xScale(point.First_Name)}
       cy={height - 40}
     >
-      <title>{point.id}</title></circle
+      <title>{point.First_Name}</title></circle
     >
   {/each}
 </svg>

@@ -1,14 +1,5 @@
 body{
-		
+		background-image: url('/assets/beachbackground.jpg');
+		background-attachment: fixed;
+		background-position-y: 87%;
 	}
-
-body::before {    
-      content: "";
-      background-image: url('/assets/beachbackground.jpg');
-      position: absolute;
-      top: 0px;
-      right: 0px;
-      bottom: 0px;
-      left: 0px;
-      opacity: 0.75;
-}
