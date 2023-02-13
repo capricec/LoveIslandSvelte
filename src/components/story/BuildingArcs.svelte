@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
 
   import { scalePoint, scaleLinear, scaleOrdinal } from "d3-scale";
-  import { arc } from "d3-shape";
+  import { arc, linkVertical } from "d3-shape";
   import SinglesData from "$data/SinglesData.json";
   import CouplesData from "$data/CouplesData.json";
   import SeasonsData from "$data/SeasonsData.csv";
@@ -11,14 +11,16 @@
   let scrollPosition;
   let link = [];
   let node = [];
-  let nodeData, linkData, allNodesNames, xScale;
+  let label = [];
+  let nodeData, linkData, seasonData, allNodesNames, xScale;
   
   
   let d3 = {
     scaleLinear,
     scaleOrdinal,
     arc,
-    scalePoint
+    scalePoint,
+    linkVertical
   };
 
   let svg;
@@ -37,57 +39,74 @@
 
     if (scrollPosition == 0){
       addNodes()
+      addSinglesLabel()
     }
 
     if (scrollPosition == 1){
       colorNodes()
+      addSinglesOpacityLabel()
     }
 
     if (scrollPosition == 2){
       addAllLinksNoShading()
+      addCouplesLabel()
     }
 
     if (scrollPosition == 3){
       addAllLinks()
+      addCouplesOpacityLabel()
     }
 
     if (scrollPosition == 5){
     sizeNodes()
-    console.log(node);
+    addNumCouplesLabel()
     }
 
     if(scrollPosition == 7){
       showRecouplings()
+      addLineWeightLabel()
     }
 
     if(scrollPosition == 9){
       showNumberofDays()
+      addLineOpacityLabel()
+    }
+
+    if(scrollPosition == 10){
+      showWinners()
+      removeLabel()
     }
   });
 
   
   
-
-  
   const colourScale = d3.scaleLinear().domain([0, 5, 9, 40])
     .range([100, 100, 20, 0]);
-  const opacityLine = d3.scaleLinear().domain([0, 13, 14, 50])
-    .range([50, 50, 10, 0]);
-  const colourScaleLine = d3.scaleLinear().domain([0, 7,50, 51])
-    .range(["white", "lightgrey", "lightgrey", "black"])
   const colourScaleWinner = d3.scaleOrdinal().domain(["Winner", "Runner-Up", "Third Place", "Fourth Place", "Dumped", "Walked"])
-    .range(["black", "grey", "grey", "grey", "white", "white"]);
+    .range(["black", "white", "white", "white", "white", "white"]);
   const colourScaleGender = d3.scaleOrdinal().domain(["M", "F"])
     .range(["teal", "DeepPink"]);
+
+  const opacityLine = d3.scaleOrdinal().domain(["Before", "After", "Winner"])
+    .range([50, 10, 100]);
+
+  const colourScaleLine = d3.scaleOrdinal().domain(["Less", "More", "Winner"])
+    .range(["lightgrey", "black", "black"]);
+
+  const diagonal = d3.linkVertical()
+                .source(function(d) {
+                    return [d.source[0], d.source[1]];
+                })
+                .target(function(d) {
+                    return [d.target[0], d.target[1]];
+                });
 
 
 
 function UpdateSeason(newSeason){
   let season = newSeason;
-  console.log(season, SeasonsData);
 
   seasonData=SeasonsData.filter(function(d){ return d.Season_Name == season});
-  console.log(seasonData);
   
   nodeData = SinglesData.filter(function(d){ return d.Season == season});
   linkData = CouplesData.filter(function(d){ return d.values[0].Season == season });
@@ -119,7 +138,7 @@ function addNodes(){
       return {
         Gender: d.Gender,
         Entered: 1,
-        Status: d.Status,
+        Status: "Dumped",
         First_Name: d.First_Name,
         Num_Couples: 1
       };
@@ -134,7 +153,7 @@ function colorNodes(){
       return {
         Gender: d.Gender,
         Entered: d.Entered,
-        Status: d.Status,
+        Status: "Dumped",
         First_Name: d.First_Name,
         Num_Couples: 1
       };
@@ -149,7 +168,7 @@ function sizeNodes(){
       return {
         Gender: d.Gender,
         Entered: d.Entered,
-        Status: d.Status,
+        Status: "Dumped",
         First_Name: d.First_Name,
         Num_Couples: +d.Num_Couples
       };
@@ -165,8 +184,8 @@ function sizeNodes(){
         source: d.values[0].Participant1,
         target: d.values[0].Participant2,
         chosen: 1,
-        firstcouple: d.FirstCouplingDay,
-        totaldays: 51,
+        firstcouple: d.FirstCouplingDay < 15 ? "Before" : "After",
+        totaldays: "More"
       };
   });
 
@@ -179,8 +198,8 @@ function sizeNodes(){
         source: d.values[0].Participant1,
         target: d.values[0].Participant2,
         chosen: 1,
-        firstcouple: 13,
-        totaldays: 51,
+        firstcouple: "Before",
+        totaldays: "More"
       };
   });
 
@@ -195,8 +214,8 @@ function sizeNodes(){
       source: d.values[0].Participant1,
       target: d.values[0].Participant2,
       chosen: d.TotalTimesChosen,
-      firstcouple: d.FirstCouplingDay,
-      totaldays:51
+      firstcouple: d.FirstCouplingDay < 15 ? "Before" : "After",
+      totaldays:"More"
     };
   });
 
@@ -212,8 +231,34 @@ function showNumberofDays(){
       source: d.values[0].Participant1,
       target: d.values[0].Participant2,
       chosen: d.TotalTimesChosen,
-      firstcouple: d.FirstCouplingDay,
-      totaldays: 35+ d.TotalDays
+      firstcouple: d.FirstCouplingDay < 15 ? "Before" : "After",
+      totaldays: d.TotalDays < 7 ? "Less" : "More"
+    };
+  });
+
+   addLinks(link);
+
+  }
+
+  function showWinners(){
+
+    node = nodeData.map(d => {
+      return {
+        Gender: d.Gender,
+        Entered: d.Status == "Winner" ? 1 : d.Entered,
+        Status: d.Status,
+        First_Name: d.First_Name,
+        Num_Couples: +d.Num_Couples
+      };
+  });
+
+    link = linkData.map(d => {
+    return {
+      source: d.values[0].Participant1,
+      target: d.values[0].Participant2,
+      chosen: d.TotalTimesChosen,
+      firstcouple: +d.FinalStatus == 1 ? "Winner": d.FirstCouplingDay < 15 ? "Before" : "After",
+      totaldays: +d.FinalStatus == 1 ? "Winner" : d.TotalDays < 7 ? "Less" : "More"
     };
   });
 
@@ -257,6 +302,74 @@ function showNumberofDays(){
            .join(' ');                // convert the bracketed array into a string
      return arcPath;
   };
+
+
+  function addSinglesLabel(){
+
+     label = [{
+      path: {source: [width-100,height-150], target:[width*2/3,height-85]},
+      text: "The singles"
+     }];
+
+  }
+
+  function addSinglesOpacityLabel(){
+
+     label = [{
+      path: {source: [width-150,height-150], target:[width-70,height-85]},
+      text: "Singles in before day 9"
+     }];
+
+  }
+
+  function addCouplesLabel(){
+
+     label = [{
+      path: {source: [width-80,50], target:[width-120,105]},
+      text: "The couples"
+     }];
+
+  }
+
+  function addCouplesOpacityLabel(){
+
+     label = [{
+      path: {source: [width-110,20], target:[width-150,80]},
+      text: "Couples made before 2nd recoupling"
+     }];
+
+  }
+
+  function addNumCouplesLabel(){
+
+     label = [{
+      path: {source: [width-220,height-150], target:[width-130,height-85]},
+      text: "Circles grow with each coupling"
+     }];
+
+  }
+
+  function addLineWeightLabel(){
+
+     label = [{
+      path: {source: [width-110,20], target:[width-150,80]},
+      text: "Lines thicken every recoupling"
+     }];
+
+  }
+
+  function addLineOpacityLabel(){
+
+     label = [{
+      path: {source: [width-150,30], target:[width-110,100]},
+      text: "Couples together more than 7 days "
+     }];
+
+  }
+
+  function removeLabel(){
+     label = [];
+  }
   
   function resize() {
     ({ width, height } = svg.getBoundingClientRect());
@@ -302,6 +415,35 @@ function showNumberofDays(){
   </g>
 
   {/each}
+
+  {#each label as drawnLabel}
+    <g>
+      <path
+        d={diagonal(drawnLabel.path)}
+        fill={"none"}
+        stroke={"black"}
+        stroke-width={1}
+      />
+    </g>
+
+    <g
+      class="label-holder"
+      >
+    <text
+      class="label"
+      text-anchor="middle"
+      transform={"translate(" +(drawnLabel.path.source[0]) + "," + (drawnLabel.path.source[1]-5) + ")"}>
+    {drawnLabel.text}</text>
+
+    <text
+      class="label-arrow"
+      text-anchor="end"
+      font-size="30px"
+      transform={"translate(" +(drawnLabel.path.target[0]+6) + "," + (drawnLabel.path.target[1]+5) + ")"}>
+     &#8744</text>
+  </g>
+
+  {/each}
 </svg>
 
 <style>
@@ -309,6 +451,10 @@ function showNumberofDays(){
     float: left;
   }
   circle {
+  }
+
+  .label-arrow{
+    font-size: 20px;
   }
 
   text{
