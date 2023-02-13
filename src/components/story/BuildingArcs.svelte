@@ -5,6 +5,7 @@
   import { arc } from "d3-shape";
   import SinglesData from "$data/SinglesData.json";
   import CouplesData from "$data/CouplesData.json";
+  import SeasonsData from "$data/SeasonsData.csv";
   import { scrollState, chosenSeason } from "$stores/misc";
 
   let scrollPosition;
@@ -30,7 +31,6 @@
   })
 
 
-
   scrollState.subscribe(value => {
     console.log(value);
     scrollPosition = value;
@@ -52,7 +52,8 @@
     }
 
     if (scrollPosition == 5){
-      addAllLinks()
+    sizeNodes()
+    console.log(node);
     }
 
     if(scrollPosition == 7){
@@ -71,9 +72,9 @@
   const colourScale = d3.scaleLinear().domain([0, 5, 9, 40])
     .range([100, 100, 20, 0]);
   const opacityLine = d3.scaleLinear().domain([0, 13, 14, 50])
-    .range([0, 10, 30, 50]);
-  const colourScaleLine = d3.scaleLinear().domain([0, 14, 15,50])
-    .range(["black", "black", "lightgrey", "white"])
+    .range([50, 50, 10, 0]);
+  const colourScaleLine = d3.scaleLinear().domain([0, 7,50, 51])
+    .range(["white", "lightgrey", "lightgrey", "black"])
   const colourScaleWinner = d3.scaleOrdinal().domain(["Winner", "Runner-Up", "Third Place", "Fourth Place", "Dumped", "Walked"])
     .range(["black", "grey", "grey", "grey", "white", "white"]);
   const colourScaleGender = d3.scaleOrdinal().domain(["M", "F"])
@@ -83,6 +84,9 @@
 
 function UpdateSeason(newSeason){
   let season = newSeason;
+
+  seasonData=SeasonsData.filter(function(d){ return d.Season == season});
+  console.log(seasonData);
   
   nodeData = SinglesData.filter(function(d){ return d.Season == season});
   linkData = CouplesData.filter(function(d){ return d.values[0].Season == season });
@@ -115,7 +119,8 @@ function addNodes(){
         Gender: d.Gender,
         Entered: 1,
         Status: d.Status,
-        First_Name: d.First_Name
+        First_Name: d.First_Name,
+        Num_Couples: 1
       };
   });
  link = [];
@@ -124,42 +129,34 @@ function addNodes(){
 
 function colorNodes(){
 
- node = nodeData;
+ node = nodeData.map(d => {
+      return {
+        Gender: d.Gender,
+        Entered: d.Entered,
+        Status: d.Status,
+        First_Name: d.First_Name,
+        Num_Couples: 1
+      };
+  });
  link = [];
 
 }
 
+function sizeNodes(){
 
-function addFirstLinks(){
-
-  let filteredlinkData = linkData.filter(function(d){ return +d.FirstCouplingDay < 15 });
-   
-  link = filteredlinkData.map(d => {
+ node = nodeData.map(d => {
       return {
-        source: d.values[0].Participant1,
-        target: d.values[0].Participant2,
-        chosen: 1,
-        firstcouple: d.FirstCouplingDay,
-        totaldays: 35,
+        Gender: d.Gender,
+        Entered: d.Entered,
+        Status: d.Status,
+        First_Name: d.First_Name,
+        Num_Couples: +d.Num_Couples
       };
   });
+ 
 
-   link.forEach(function(d){
-     var index1 = nodeData.findIndex(x => x.First_Name === d.source);
-     var index2 = nodeData.findIndex(x => x.First_Name === d.target);
-     if(index1 < index2){
-      d.index1 = index2;
-      d.index2 = index1;
-     } else{
-      d.index2 = index2;
-      d.index1 = index1;
-     }
-     var radius = 7.5*(d.index1-d.index2)
+}
 
-     d.arcPath = buildArc(d)
-    })
-
-  }
 
   function addAllLinks(){
   link = linkData.map(d => {
@@ -168,25 +165,11 @@ function addFirstLinks(){
         target: d.values[0].Participant2,
         chosen: 1,
         firstcouple: d.FirstCouplingDay,
-        totaldays: 35,
+        totaldays: 51,
       };
   });
 
-   link.forEach(function(d){
-     var index1 = nodeData.findIndex(x => x.First_Name === d.source);
-     var index2 = nodeData.findIndex(x => x.First_Name === d.target);
-     if(index1 < index2){
-      d.index1 = index2;
-      d.index2 = index1;
-     } else{
-      d.index2 = index2;
-      d.index1 = index1;
-     }
-     var radius = 7.5*(d.index1-d.index2)
-
-     d.arcPath = buildArc(d)
-    })
-
+   addLinks(link);
   }
 
   function addAllLinksNoShading(){
@@ -195,25 +178,12 @@ function addFirstLinks(){
         source: d.values[0].Participant1,
         target: d.values[0].Participant2,
         chosen: 1,
-        firstcouple: 14,
-        totaldays: 35,
+        firstcouple: 13,
+        totaldays: 51,
       };
   });
 
-   link.forEach(function(d){
-     var index1 = nodeData.findIndex(x => x.First_Name === d.source);
-     var index2 = nodeData.findIndex(x => x.First_Name === d.target);
-     if(index1 < index2){
-      d.index1 = index2;
-      d.index2 = index1;
-     } else{
-      d.index2 = index2;
-      d.index1 = index1;
-     }
-     var radius = 7.5*(d.index1-d.index2)
-
-     d.arcPath = buildArc(d)
-    })
+   addLinks(link);
 
   }
 
@@ -225,24 +195,11 @@ function addFirstLinks(){
       target: d.values[0].Participant2,
       chosen: d.TotalTimesChosen,
       firstcouple: d.FirstCouplingDay,
-      totaldays:35
+      totaldays:51
     };
   });
 
-   link.forEach(function(d){
-     var index1 = nodeData.findIndex(x => x.First_Name === d.source);
-     var index2 = nodeData.findIndex(x => x.First_Name === d.target);
-     if(index1 < index2){
-      d.index1 = index2;
-      d.index2 = index1;
-     } else{
-      d.index2 = index2;
-      d.index1 = index1;
-     }
-     var radius = 7.5*(d.index1-d.index2)
-
-     d.arcPath = buildArc(d)
-    })
+   addLinks(link);
 
   }
 
@@ -259,7 +216,12 @@ function showNumberofDays(){
     };
   });
 
-   link.forEach(function(d){
+   addLinks(link);
+
+  }
+
+  function addLinks(dataset){
+    dataset.forEach(function(d){
      var index1 = nodeData.findIndex(x => x.First_Name === d.source);
      var index2 = nodeData.findIndex(x => x.First_Name === d.target);
      if(index1 < index2){
@@ -280,7 +242,7 @@ function showNumberofDays(){
     //console.log(d.index1, d.index2);
      let start = xScale(nodeData[d.index2].First_Name);
      let end = xScale(nodeData[d.index1].First_Name);
-     let curve = (start - end)/(1+ (d.totaldays/35));
+     let curve = (start - end)/(1+ (51/35));
      //curve = (start - end)/2;
 
      const arcPath = ['M',            // start the path
@@ -308,9 +270,9 @@ function showNumberofDays(){
       <path
         d={arc.arcPath}
         fill={"none"}
-        opacity = {opacityLine(arc.totaldays)+ "%"}
-        stroke={colourScaleLine(arc.firstcouple)}
-        stroke-width={arc.chosen}
+        opacity = {opacityLine(arc.firstcouple)+ "%"}
+        stroke={colourScaleLine(arc.totaldays)}
+        stroke-width={arc.chosen*1.5}
       />
     </g>
   {/each}
@@ -318,7 +280,7 @@ function showNumberofDays(){
   {#each node as point,i}
     <circle
       class="node"
-      r="7"
+      r={(width/node.length/3)-2+point.Num_Couples*2}
       fill={colourScaleGender(point.Gender)}
       opacity = {colourScale(point.Entered) + "%"}
       stroke = {colourScaleWinner(point.Status)}

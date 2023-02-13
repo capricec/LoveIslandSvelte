@@ -37,7 +37,7 @@
 	}
 
 	#Intro{
-		margin-top: 80px;
+		margin-top: 100px;
 	}
 
 	:global(#Content section) {
