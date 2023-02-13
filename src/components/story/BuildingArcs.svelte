@@ -84,8 +84,9 @@
 
 function UpdateSeason(newSeason){
   let season = newSeason;
+  console.log(season, SeasonsData);
 
-  seasonData=SeasonsData.filter(function(d){ return d.Season == season});
+  seasonData=SeasonsData.filter(function(d){ return d.Season_Name == season});
   console.log(seasonData);
   
   nodeData = SinglesData.filter(function(d){ return d.Season == season});
