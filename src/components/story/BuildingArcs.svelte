@@ -8,6 +8,8 @@
   import SeasonsData from "$data/SeasonsData.csv";
   import { scrollState, chosenSeason } from "$stores/misc";
 
+  console.log(SeasonsData);
+
   let scrollPosition;
   let link = [];
   let node = [];
@@ -32,10 +34,7 @@
     UpdateSeason(value);
   })
 
-
-  scrollState.subscribe(value => {
-    console.log(value);
-    scrollPosition = value;
+  function changeState(scrollPosition){
 
     if (scrollPosition == 0){
       addNodes()
@@ -76,6 +75,16 @@
       showWinners()
       removeLabel()
     }
+
+  }
+
+
+  scrollState.subscribe(value => {
+    console.log(value);
+    scrollPosition = value;
+
+    changeState(scrollPosition);
+
   });
 
   
@@ -107,6 +116,8 @@ function UpdateSeason(newSeason){
   let season = newSeason;
 
   seasonData=SeasonsData.filter(function(d){ return d.Season_Name == season});
+
+  console.log(seasonData);
   
   nodeData = SinglesData.filter(function(d){ return d.Season == season});
   linkData = CouplesData.filter(function(d){ return d.values[0].Season == season });
@@ -128,6 +139,7 @@ function UpdateSeason(newSeason){
        .range([10,width- 20]);
 
   colorNodes()
+  changeState(scrollPosition);
 
 }
 
