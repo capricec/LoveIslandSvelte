@@ -4,6 +4,6 @@
 </script>
 
 <Header />
-<main id="content">
+<main id="content" >
 	<slot />
 </main>

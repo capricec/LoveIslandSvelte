@@ -21,20 +21,20 @@
   let svg;
   let width = 200;
   let height = 180;
-  console.log(value);
+  //console.log(value);
   
   const colourScale = d3.scaleLinear().domain([0, 5, 9, 40])
-    .range([100, 100, 20, 0]);
+    .range([100, 100, 10, 0]);
   const colourScaleWinner = d3.scaleOrdinal().domain(["Winner", "Runner-Up", "Third Place", "Fourth Place", "Dumped", "Walked"])
-    .range(["black", "white", "white", "white", "white", "white"]);
+    .range(["#8f2d56", "white", "white", "white", "white", "white"]);
   const colourScaleGender = d3.scaleOrdinal().domain(["M", "F"])
-    .range(["teal", "DeepPink"]);
+    .range(["#218380", "#d81159"]);
 
   const opacityLine = d3.scaleOrdinal().domain(["Before", "After", "Winner"])
-    .range([50, 10, 100]);
+    .range([50, 5, 100]);
 
-  const colourScaleLine = d3.scaleOrdinal().domain(["Less", "More", "Winner"])
-    .range(["lightgrey", "black", "black"]);
+  const colourScaleLine = d3.scaleOrdinal().domain(["None","Less", "More", "Winner", "Surprise"])
+    .range(["black","lightgrey", "#d81159", "#8f2d56", "#254e70"]);
 
 
   let season = value.Season_Name;
@@ -43,6 +43,13 @@
   
   nodeData = SinglesData.filter(function(d){ return d.Season == season});
   linkData = CouplesData.filter(function(d){ return d.values[0].Season == season });
+
+  linkData.forEach( function(d){
+    if(d. FinalStatus == 1 && (d.FirstCouplingDay > seasonData.Second_Recouple || d.TotalDays <= 14 && d.TotalTimesChosen < 2 || ( +d.values[0].Part1.Entered > 9 || +d.values[0].Part2.Entered > 9))){
+      d.FinalStatus = "Surprise";
+      console.log(d);
+    }
+  })
 
 
   nodeData.sort(function(a, b) {
@@ -58,7 +65,7 @@
    allNodesNames = nodeData.map(function(d){return d.First_Name});
    xScale = d3.scalePoint()
        .domain(allNodesNames)
-       .range([10,width- 20]);
+       .range([11,width- 20]);
 
   showWinners()
 
@@ -80,8 +87,8 @@
       source: d.values[0].Participant1,
       target: d.values[0].Participant2,
       chosen: d.TotalTimesChosen,
-      firstcouple: +d.FinalStatus == 1 ? "Winner": d.FirstCouplingDay < 15 ? "Before" : "After",
-      totaldays: +d.FinalStatus == 1 ? "Winner" : d.TotalDays < 7 ? "Less" : "More"
+      firstcouple: +d.FinalStatus == 1 || d.FinalStatus == "Surprise" ? "Winner"  : d.FirstCouplingDay < seasonData.Second_Recouple ? "Before" : "After",
+      totaldays: +d.FinalStatus == 1 ? "Winner" : d.FinalStatus == "Surprise"? "Surprise": d.TotalDays < 7 ? "Less" : "More"
     };
   });
 
@@ -152,7 +159,7 @@
   {#each node as point,i}
     <circle
       class="node"
-      r={(width/node.length/3)-2+point.Num_Couples}
+      r={(width/node.length/3)-1+point.Num_Couples}
       fill={colourScaleGender(point.Gender)}
       opacity = {colourScale(point.Entered) + "%"}
       stroke = {colourScaleWinner(point.Status)}

@@ -2,15 +2,15 @@
 	import wordmark from "$svg/wordmark.svg";
 </script>
 
-<header>
-	<!--<div class="wordmark">
-		<a href="https://pudding.cool" aria-label="The Pudding">{@html wordmark}</a>
-	</div>-->
+<header class = "ontop">
+	<div class="wordmark">
+		<a href="https://originaldatum.com/" aria-label="Original Datum">Original Datum</a>
+	</div>
 </header>
 
 <style>
 	.wordmark {
-		max-width: 10em;
+		max-width: 15em;
 		margin: 0 auto;
 		padding: 1em 0;
 	}
@@ -18,6 +18,8 @@
 	.wordmark a {
 		border: none;
 		display: block;
+		font-size: 30px;
+		text-align: center;
 		color: var(--color-fg);
 	}
 

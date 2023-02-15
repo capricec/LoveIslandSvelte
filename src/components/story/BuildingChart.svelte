@@ -15,7 +15,7 @@
 
 <style>
 	figure {
-		width: 600px;
+		width: 650px;
 		height: 500px;
 	}
 </style>

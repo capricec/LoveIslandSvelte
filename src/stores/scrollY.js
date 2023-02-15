@@ -11,6 +11,7 @@ export default readable(0, (set) => {
 	};
 
 	const onScroll = () => {
+		console.log(window.scrollY);
 		lastScrollY = window.scrollY;
 		if (!ticking) {
 			requestAnimationFrame(updateScrollY);

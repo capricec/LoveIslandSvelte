@@ -26,8 +26,8 @@
   };
 
   let svg;
-  let width = 600;
-  let height = 450;
+  let width = 650;
+  let height = 480;
 
   chosenSeason.subscribe(value => {
     console.log(value);
@@ -80,9 +80,7 @@
 
 
   scrollState.subscribe(value => {
-    console.log(value);
     scrollPosition = value;
-
     changeState(scrollPosition);
 
   });
@@ -90,17 +88,17 @@
   
   
   const colourScale = d3.scaleLinear().domain([0, 5, 9, 40])
-    .range([100, 100, 20, 0]);
+    .range([100, 100, 10, 0]);
   const colourScaleWinner = d3.scaleOrdinal().domain(["Winner", "Runner-Up", "Third Place", "Fourth Place", "Dumped", "Walked"])
-    .range(["black", "white", "white", "white", "white", "white"]);
+    .range(["#8f2d56", "white", "white", "white", "white", "white"]);
   const colourScaleGender = d3.scaleOrdinal().domain(["M", "F"])
-    .range(["teal", "DeepPink"]);
+    .range(["#218380", "#d81159"]);
 
   const opacityLine = d3.scaleOrdinal().domain(["Before", "After", "Winner"])
-    .range([50, 10, 100]);
+    .range([50, 5, 100]);
 
-  const colourScaleLine = d3.scaleOrdinal().domain(["Less", "More", "Winner"])
-    .range(["lightgrey", "black", "black"]);
+  const colourScaleLine = d3.scaleOrdinal().domain(["None","Less", "More", "Winner", "Surprise"])
+    .range(["black","lightgrey", "#d81159", "#8f2d56", "#254e70"]);
 
   const diagonal = d3.linkVertical()
                 .source(function(d) {
@@ -121,6 +119,12 @@ function UpdateSeason(newSeason){
   
   nodeData = SinglesData.filter(function(d){ return d.Season == season});
   linkData = CouplesData.filter(function(d){ return d.values[0].Season == season });
+
+   linkData.forEach( function(d){
+    if(d. FinalStatus == 1 && (d.FirstCouplingDay > seasonData[0].Second_Recouple || d.TotalDays <= 14 && d.TotalTimesChosen < 2 || ( +d.values[0].Part1.Entered > 9 || +d.values[0].Part2.Entered > 9))){
+      d.FinalStatus = "Surprise";
+    }
+  })
 
 
   nodeData.sort(function(a, b) {
@@ -196,8 +200,8 @@ function sizeNodes(){
         source: d.values[0].Participant1,
         target: d.values[0].Participant2,
         chosen: 1,
-        firstcouple: d.FirstCouplingDay < 15 ? "Before" : "After",
-        totaldays: "More"
+        firstcouple: d.FirstCouplingDay < seasonData[0].Second_Recouple ? "Before" : "After",
+        totaldays: "None"
       };
   });
 
@@ -211,7 +215,7 @@ function sizeNodes(){
         target: d.values[0].Participant2,
         chosen: 1,
         firstcouple: "Before",
-        totaldays: "More"
+        totaldays: "None"
       };
   });
 
@@ -226,8 +230,8 @@ function sizeNodes(){
       source: d.values[0].Participant1,
       target: d.values[0].Participant2,
       chosen: d.TotalTimesChosen,
-      firstcouple: d.FirstCouplingDay < 15 ? "Before" : "After",
-      totaldays:"More"
+      firstcouple: d.FirstCouplingDay < seasonData[0].Second_Recouple ? "Before" : "After",
+      totaldays:"None"
     };
   });
 
@@ -243,7 +247,7 @@ function showNumberofDays(){
       source: d.values[0].Participant1,
       target: d.values[0].Participant2,
       chosen: d.TotalTimesChosen,
-      firstcouple: d.FirstCouplingDay < 15 ? "Before" : "After",
+      firstcouple: d.FirstCouplingDay < seasonData[0].Second_Recouple ? "Before" : "After",
       totaldays: d.TotalDays < 7 ? "Less" : "More"
     };
   });
@@ -269,8 +273,8 @@ function showNumberofDays(){
       source: d.values[0].Participant1,
       target: d.values[0].Participant2,
       chosen: d.TotalTimesChosen,
-      firstcouple: +d.FinalStatus == 1 ? "Winner": d.FirstCouplingDay < 15 ? "Before" : "After",
-      totaldays: +d.FinalStatus == 1 ? "Winner" : d.TotalDays < 7 ? "Less" : "More"
+      firstcouple: +d.FinalStatus == 1 || d.FinalStatus == "Surprise" ? "Winner"  : d.FirstCouplingDay < seasonData[0].Second_Recouple ? "Before" : "After",
+      totaldays: +d.FinalStatus == 1 ? "Winner" : d.FinalStatus == "Surprise"? "Surprise": d.TotalDays < 7 ? "Less" : "More"
     };
   });
 
@@ -346,8 +350,8 @@ function showNumberofDays(){
   function addCouplesOpacityLabel(){
 
      label = [{
-      path: {source: [width-110,20], target:[width-150,80]},
-      text: "Couples made before 2nd recoupling"
+      path: {source: [width-110,50], target:[width-150,90]},
+      text: "Couples made by 2nd recoupling"
      }];
 
   }
@@ -355,8 +359,8 @@ function showNumberofDays(){
   function addNumCouplesLabel(){
 
      label = [{
-      path: {source: [width-220,height-150], target:[width-130,height-85]},
-      text: "Circles grow with each coupling"
+      path: {source: [width-230,height-150], target:[width-130,height-85]},
+      text: "Circles grow with each partner"
      }];
 
   }
@@ -364,7 +368,7 @@ function showNumberofDays(){
   function addLineWeightLabel(){
 
      label = [{
-      path: {source: [width-110,20], target:[width-150,80]},
+      path: {source: [width-110,50], target:[width-150,110]},
       text: "Lines thicken every recoupling"
      }];
 
@@ -373,7 +377,7 @@ function showNumberofDays(){
   function addLineOpacityLabel(){
 
      label = [{
-      path: {source: [width-150,30], target:[width-110,100]},
+      path: {source: [width-150,50], target:[width-110,120]},
       text: "Couples together more than 7 days "
      }];
 
