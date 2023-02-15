@@ -1,14 +1,9 @@
 <script>
-  import { onMount } from "svelte";
-
+  import { onMount, getContext } from "svelte";
   import { scalePoint, scaleLinear, scaleOrdinal } from "d3-scale";
   import { arc, linkVertical } from "d3-shape";
-  import SinglesData from "$data/SinglesData.json";
-  import CouplesData from "$data/CouplesData.json";
   import SeasonsData from "$data/SeasonsData.csv";
   import { scrollState, chosenSeason } from "$stores/misc";
-
-  console.log(SeasonsData);
 
   let scrollPosition;
   let link = [];
@@ -16,6 +11,9 @@
   let label = [];
   let nodeData, linkData, seasonData, allNodesNames, xScale;
   
+  const SinglesData = getContext("singlesData");
+  const CouplesData = getContext("couplesData");
+
   
   let d3 = {
     scaleLinear,
@@ -30,7 +28,6 @@
   let height = 480;
 
   chosenSeason.subscribe(value => {
-    console.log(value);
     UpdateSeason(value);
   })
 
@@ -115,7 +112,6 @@ function UpdateSeason(newSeason){
 
   seasonData=SeasonsData.filter(function(d){ return d.Season_Name == season});
 
-  console.log(seasonData);
   
   nodeData = SinglesData.filter(function(d){ return d.Season == season});
   linkData = CouplesData.filter(function(d){ return d.values[0].Season == season });

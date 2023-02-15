@@ -1,15 +1,16 @@
 <script>
   export let value;
-
   import { scalePoint, scaleLinear, scaleOrdinal } from "d3-scale";
   import { linkVertical } from "d3-shape";
-  import SinglesData from "$data/SinglesData.json";
-  import CouplesData from "$data/CouplesData.json";
+  import {getContext } from "svelte";
 
   let link = [];
   let node = [];
   let label = [];
   let nodeData, linkData, seasonData, allNodesNames, xScale;
+
+  const SinglesData = getContext("singlesData");
+  const CouplesData = getContext("couplesData");
   
   
   let d3 = {
@@ -47,7 +48,7 @@
   linkData.forEach( function(d){
     if(d. FinalStatus == 1 && (d.FirstCouplingDay > seasonData.Second_Recouple || d.TotalDays <= 14 && d.TotalTimesChosen < 2 || ( +d.values[0].Part1.Entered > 9 || +d.values[0].Part2.Entered > 9))){
       d.FinalStatus = "Surprise";
-      console.log(d);
+
     }
   })
 
