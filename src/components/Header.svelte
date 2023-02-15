@@ -1,5 +1,4 @@
 <script>
-	import wordmark from "$svg/wordmark.svg";
 </script>
 
 <header class = "ontop">

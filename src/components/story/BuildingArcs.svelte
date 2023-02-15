@@ -377,7 +377,7 @@ function showNumberofDays(){
   function addLineOpacityLabel(){
 
      label = [{
-      path: {source: [width-150,50], target:[width-110,120]},
+      path: {source: [width-110,50], target:[width-150,110]},
       text: "Couples together more than 7 days "
      }];
 
