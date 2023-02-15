@@ -37,6 +37,7 @@
 		width: 60%;
 		right: 0;
 		background: white;
+		border: 1px solid pink;
 		padding: 20px;
 		z-index: 10;
 		box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
