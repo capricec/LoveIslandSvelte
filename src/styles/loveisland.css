@@ -1,5 +1,7 @@
 
-
+body{
+	background: white;
+}
 	.ontop{
 		    background-image: url(/assets/beachbackground.jpg);
 		    background-attachment: fixed;
