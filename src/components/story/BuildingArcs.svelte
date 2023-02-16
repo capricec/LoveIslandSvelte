@@ -114,10 +114,12 @@ function UpdateSeason(newSeason){
 
   
   nodeData = SinglesData.filter(function(d){ return d.Season == season});
-  linkData = CouplesData.filter(function(d){ return d.values[0].Season == season });
+  linkData = CouplesData.filter(function(d){ return d.Season == season });
+
+  console.log(nodeData, linkData);
 
    linkData.forEach( function(d){
-    if(d. FinalStatus == 1 && (d.FirstCouplingDay > seasonData[0].Second_Recouple || d.TotalDays <= 14 && d.TotalTimesChosen < 2 || ( +d.values[0].Part1.Entered > 9 || +d.values[0].Part2.Entered > 9))){
+    if(d. FinalStatus == 1 && (d.FirstCouplingDay > seasonData[0].Second_Recouple || d.TotalDays <= 14 && d.TotalTimesChosen < 2 || ( +d.Part1Entered > 9 || +d.Part2Entered > 9))){
       d.FinalStatus = "Surprise";
     }
   })
@@ -193,8 +195,8 @@ function sizeNodes(){
   function addAllLinks(){
   link = linkData.map(d => {
       return {
-        source: d.values[0].Participant1,
-        target: d.values[0].Participant2,
+        source: d.Part1,
+        target: d.Part2,
         chosen: 1,
         firstcouple: d.FirstCouplingDay < seasonData[0].Second_Recouple ? "Before" : "After",
         totaldays: "None"
@@ -207,8 +209,8 @@ function sizeNodes(){
   function addAllLinksNoShading(){
   link = linkData.map(d => {
       return {
-        source: d.values[0].Participant1,
-        target: d.values[0].Participant2,
+        source: d.Part1,
+        target: d.Part2,
         chosen: 1,
         firstcouple: "Before",
         totaldays: "None"
@@ -223,8 +225,8 @@ function sizeNodes(){
 
     link = linkData.map(d => {
     return {
-      source: d.values[0].Participant1,
-      target: d.values[0].Participant2,
+      source: d.Part1,
+      target: d.Part2,
       chosen: d.TotalTimesChosen,
       firstcouple: d.FirstCouplingDay < seasonData[0].Second_Recouple ? "Before" : "After",
       totaldays:"None"
@@ -240,8 +242,8 @@ function showNumberofDays(){
 
     link = linkData.map(d => {
     return {
-      source: d.values[0].Participant1,
-      target: d.values[0].Participant2,
+      source: d.Part1,
+      target: d.Part2,
       chosen: d.TotalTimesChosen,
       firstcouple: d.FirstCouplingDay < seasonData[0].Second_Recouple ? "Before" : "After",
       totaldays: d.TotalDays < 7 ? "Less" : "More"
@@ -266,8 +268,8 @@ function showNumberofDays(){
 
     link = linkData.map(d => {
     return {
-      source: d.values[0].Participant1,
-      target: d.values[0].Participant2,
+      source: d.Part1,
+      target: d.Part2,
       chosen: d.TotalTimesChosen,
       firstcouple: +d.FinalStatus == 1 || d.FinalStatus == "Surprise" ? "Winner"  : d.FirstCouplingDay < seasonData[0].Second_Recouple ? "Before" : "After",
       totaldays: +d.FinalStatus == 1 ? "Winner" : d.FinalStatus == "Surprise"? "Surprise": d.TotalDays < 7 ? "Less" : "More"

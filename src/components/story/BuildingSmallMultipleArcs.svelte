@@ -43,10 +43,10 @@
   seasonData=value
   
   nodeData = SinglesData.filter(function(d){ return d.Season == season});
-  linkData = CouplesData.filter(function(d){ return d.values[0].Season == season });
+  linkData = CouplesData.filter(function(d){ return d.Season == season });
 
   linkData.forEach( function(d){
-    if(d. FinalStatus == 1 && (d.FirstCouplingDay > seasonData.Second_Recouple || d.TotalDays <= 14 && d.TotalTimesChosen < 2 || ( +d.values[0].Part1.Entered > 9 || +d.values[0].Part2.Entered > 9))){
+    if(d. FinalStatus == 1 && (d.FirstCouplingDay > seasonData.Second_Recouple || d.TotalDays <= 14 && d.TotalTimesChosen < 2 || ( +d.Part1Entered > 9 || +d.Part2Entered > 9))){
       d.FinalStatus = "Surprise";
 
     }
@@ -85,8 +85,8 @@
 
     link = linkData.map(d => {
     return {
-      source: d.values[0].Participant1,
-      target: d.values[0].Participant2,
+      source: d.Part1,
+      target: d.Part2,
       chosen: d.TotalTimesChosen,
       firstcouple: +d.FinalStatus == 1 || d.FinalStatus == "Surprise" ? "Winner"  : d.FirstCouplingDay < seasonData.Second_Recouple ? "Before" : "After",
       totaldays: +d.FinalStatus == 1 ? "Winner" : d.FinalStatus == "Surprise"? "Surprise": d.TotalDays < 7 ? "Less" : "More"

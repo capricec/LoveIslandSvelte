@@ -1,4 +1,4 @@
-import SinglesData from "$data/SinglesData.json";
+import SinglesData from "$data/SinglesData.csv";
 import CouplesData from "$data/CouplesData.json";
 
 export async function load() {
