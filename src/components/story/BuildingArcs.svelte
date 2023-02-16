@@ -116,7 +116,7 @@ function UpdateSeason(newSeason){
   nodeData = SinglesData.filter(function(d){ return d.Season == season});
   linkData = CouplesData.filter(function(d){ return d.Season == season });
 
-  console.log(nodeData, linkData);
+  //console.log(nodeData, linkData);
 
    linkData.forEach( function(d){
     if(d. FinalStatus == 1 && (d.FirstCouplingDay > seasonData[0].Second_Recouple || d.TotalDays <= 14 && d.TotalTimesChosen < 2 || ( +d.Part1Entered > 9 || +d.Part2Entered > 9))){

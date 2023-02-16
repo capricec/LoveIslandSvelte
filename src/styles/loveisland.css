@@ -1,9 +1,8 @@
 
 
 	.ontop{
-		background-image: url('/assets/beachbackground.jpg');
-		background-attachment: fixed;
-		background-position-y: 87%;
-		z-index: 10;
-		margin: 0;
+		    background-image: url(/assets/beachbackground.jpg);
+		    background-attachment: fixed;
+		    background-position-y: 84%;
+		    background-position-x: center;
 	}
