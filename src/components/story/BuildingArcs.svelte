@@ -5,6 +5,8 @@
   import SeasonsData from "$data/SeasonsData.csv";
   import { scrollState, chosenSeason } from "$stores/misc";
 
+  let innerWidth = window.innerWidth;
+
   let scrollPosition;
   let link = [];
   let node = [];
@@ -24,8 +26,17 @@
   };
 
   let svg;
+
   let width = 650;
   let height = 480;
+
+
+    if (innerWidth < 800) {
+      console.log(innerWidth);
+         width = innerWidth-50;
+         height = innerWidth-100;
+    } 
+
 
   chosenSeason.subscribe(value => {
     UpdateSeason(value);
@@ -147,6 +158,7 @@ function UpdateSeason(newSeason){
 
 
 function addNodes(){
+
 
  node = nodeData.map(d => {
       return {
@@ -386,7 +398,8 @@ function showNumberofDays(){
   }
   
   function resize() {
-    ({ width, height } = svg.getBoundingClientRect());
+    console.log("resize", width, height);
+    
   }
 </script>
 
@@ -474,5 +487,11 @@ function showNumberofDays(){
   text{
     padding-top:5px;
     font-size: 12px;
+  }
+
+  @media (max-width: 600px) {
+    text{
+      font-size: 10px;
+    }
   }
 </style>

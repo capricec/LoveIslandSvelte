@@ -54,7 +54,7 @@
 		margin-bottom: 80vh;
 		width: auto;
 		background: white;
-		padding: 20px;
+		padding: 10px;
 		box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
 	}
 	}

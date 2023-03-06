@@ -134,4 +134,26 @@
 	.spacer {
 		height: 80vh;
 	}
+
+	@media (max-width: 600px) {
+		.content-holder{
+				width: calc(100% - 20px);
+				padding: 20px 10px;
+				margin: auto;
+				padding-bottom: 80px;
+			}
+
+		.subtitle{
+			padding: 20px 20px;
+		}
+
+		.seasonSmallMultiple{
+			display: inline-block;
+		    margin: auto;
+		    margin-left: calc(50% - 100px);
+		}
+
+
+	}
+
 </style>
